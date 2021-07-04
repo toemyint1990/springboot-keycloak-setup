@@ -1,0 +1,42 @@
+version: '3.5'
+
+services:
+  postgresql:
+    image: postgres
+    environment:
+      POSTGRES_USER: handyy
+      POSTGRES_PASSWORD: handyy
+      POSTGRES_DB: handy-service
+    ports:
+      - 54321:5432
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      - KEYCLOAK_USER=keycloak
+      - KEYCLOAK_PASSWORD=keycloak
+      - DB_VENDOR=postgres
+      - DB_ADDR=postgres-kc:5432
+      - DB_USER=keycloak
+      - DB_PASSWORD=keycloak
+    ports:
+      - 18080:8080
+    depends_on:
+      - postgres-kc
+
+  postgres-kc:
+    image: postgres
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak
+    ports:
+      - 54322:5432
+    volumes:
+      - keycloak:/var/lib/pgsql/data
+
+volumes:
+  postgresql:
+  keycloak:
